@@ -1,5 +1,7 @@
-go-firefhose - A Cloud Foundry Firehose Platform
-================================================
+go-firehose - A Cloud Foundry Firehose Platform
+===============================================
+
+![Travis CI](https://travis-ci.org/jhunt/go-firehose.svg?branch=master)
 
 Writing [Firehose Nozzles][1] for Cloud Foundry should be easier
 than it is.  This framework aims to make that want a reality.
