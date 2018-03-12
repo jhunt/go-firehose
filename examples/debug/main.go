@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/cloudfoundry/sonde-go/events"
 	"github.com/jhunt/go-firehose"
 )
 
@@ -13,7 +12,7 @@ type Nozzle struct{}
 func (Nozzle) Configure(c firehose.Config) {
 }
 
-func (Nozzle) Track(e *events.Envelope) {
+func (Nozzle) Track(e firehose.Event) {
 	log.Printf("MESSAGE -------------------------\n")
 	log.Printf("     origin %s\n", e.GetOrigin())
 	log.Printf("       type %s\n", e.GetEventType())
@@ -22,19 +21,19 @@ func (Nozzle) Track(e *events.Envelope) {
 	log.Printf("        job %s\n", e.GetJob())
 	log.Printf("      index %s\n", e.GetIndex())
 	log.Printf("         ip %s\n", e.GetIp())
-	switch e.GetEventType() {
-	case events.Envelope_CounterEvent:
+	switch e.Type() {
+	case firehose.CounterEvent:
 		m := e.GetCounterEvent()
 		log.Printf("     metric %s\n", m.GetName())
 		log.Printf("      delta %d\n", m.GetDelta())
 		log.Printf("      total %d\n", m.GetTotal())
 
-	case events.Envelope_ValueMetric:
+	case firehose.ValueMetric:
 		m := e.GetValueMetric()
 		log.Printf("     metric %s\n", m.GetName())
 		log.Printf("      value %f %s\n", m.GetValue(), m.GetUnit())
 
-	case events.Envelope_ContainerMetric:
+	case firehose.ContainerMetric:
 		m := e.GetContainerMetric()
 		log.Printf("application %s\n", m.GetApplicationId())
 		log.Printf("   instance %s\n", m.GetInstanceIndex())

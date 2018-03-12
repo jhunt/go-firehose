@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/cloudfoundry/sonde-go/events"
 	"github.com/jhunt/go-firehose"
 )
 
@@ -13,24 +12,24 @@ type Nozzle struct{}
 func (Nozzle) Configure(c firehose.Config) {
 }
 
-func (Nozzle) Track(e *events.Envelope) {
+func (Nozzle) Track(e firehose.Event) {
 	if e.GetOrigin() == "MetronAgent" {
 		return
 	}
-	switch e.GetEventType() {
-	case events.Envelope_CounterEvent:
+	switch e.Type() {
+	case firehose.CounterEvent:
 		m := e.GetCounterEvent()
 		log.Printf("%d COUNTER %s:%s:%s:%s %d/%d\n",
 			e.GetTimestamp(), e.GetDeployment(), e.GetJob(), e.GetOrigin(),
 			m.GetName(), m.GetDelta(), m.GetTotal())
 
-	case events.Envelope_ValueMetric:
+	case firehose.ValueMetric:
 		m := e.GetValueMetric()
 		log.Printf("%d SAMPLE %s:%s:%s.%s:%s %f\n",
 			e.GetTimestamp(), e.GetDeployment(), e.GetJob(), e.GetOrigin(),
 			m.GetName(), m.GetUnit(), m.GetValue())
 
-	case events.Envelope_ContainerMetric:
+	case firehose.ContainerMetric:
 		m := e.GetContainerMetric()
 		log.Printf("%d SAMPLE %s:%s:%s:%s:%s:cpu\n",
 			e.GetTimestamp(), e.GetDeployment(), e.GetJob(), e.GetOrigin(),

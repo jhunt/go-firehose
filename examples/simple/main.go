@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/cloudfoundry/sonde-go/events"
 	"github.com/jhunt/go-firehose"
 )
 
@@ -13,7 +12,7 @@ func (MyNozzle) Configure(c firehose.Config) {
 	fmt.Printf("Configure() was called!\n")
 }
 
-func (MyNozzle) Track(e *events.Envelope) {
+func (MyNozzle) Track(e firehose.Event) {
 	fmt.Printf("received a %s message from %s\n", e.GetEventType(), e.GetOrigin())
 }
 

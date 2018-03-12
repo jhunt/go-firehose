@@ -12,9 +12,42 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type EventType int
+
+var (
+	UnknownEvent    EventType = 0
+	HttpStartStop   EventType = 4
+	LogMessage      EventType = 5
+	ValueMetric     EventType = 6
+	CounterEvent    EventType = 7
+	ErrorEvent      EventType = 8
+	ContainerMetric EventType = 9
+)
+
+type Event struct {
+	*events.Envelope
+}
+
+func (e Event) Type() EventType {
+	switch e.GetEventType() {
+	default:
+		return UnknownEvent
+	case events.Envelope_HttpStartStop:
+		return HttpStartStop
+	case events.Envelope_LogMessage:
+		return LogMessage
+	case events.Envelope_ValueMetric:
+		return ValueMetric
+	case events.Envelope_Error:
+		return ErrorEvent
+	case events.Envelope_ContainerMetric:
+		return ContainerMetric
+	}
+}
+
 type Destination interface {
 	Configure(c Config)
-	Track(e *events.Envelope)
+	Track(e Event)
 	Flush() error
 	SlowConsumer()
 }
@@ -70,7 +103,7 @@ func (f *Firehose) Start() error {
 				log.Printf("We've intercepted an upstream message which indicates that the nozzle or the TrafficController is not keeping up. Please try scaling up the nozzle.")
 				f.client.SlowConsumer()
 			}
-			f.client.Track(envelope)
+			f.client.Track(Event{envelope})
 
 		case err := <-f.errs:
 			f.handleError(err)
