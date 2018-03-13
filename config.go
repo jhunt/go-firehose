@@ -85,21 +85,18 @@ func bytes(s string) (uint64, error) {
 }
 
 func ReadConfig(file string) (*Config, error) {
-	if file == "" {
-		return &Config{}, nil
-	}
-
-	b, err := ioutil.ReadFile(file)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read configuration from %s: %s", file, err)
-	}
-
 	var c Config
-	err = yaml.Unmarshal(b, &c)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse configuration from %s: %s", file, err)
-	}
+	if file != "" {
+		b, err := ioutil.ReadFile(file)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read configuration from %s: %s", file, err)
+		}
 
+		err = yaml.Unmarshal(b, &c)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse configuration from %s: %s", file, err)
+		}
+	}
 	envirotron.Override(&c)
 	n, err := seconds(c.FlushInterval)
 	if err != nil {
