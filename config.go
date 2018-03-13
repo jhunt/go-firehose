@@ -33,6 +33,10 @@ type Config struct {
 }
 
 func seconds(s string) (uint64, error) {
+	if s == "" {
+		return 0, nil
+	}
+
 	re := regexp.MustCompile("([0-9]+)([HhMmSs])")
 	m := re.FindStringSubmatch(s)
 	if m == nil {
@@ -54,6 +58,10 @@ func seconds(s string) (uint64, error) {
 }
 
 func bytes(s string) (uint64, error) {
+	if s == "" {
+		return 0, nil
+	}
+
 	re := regexp.MustCompile("^([0-9]+)([GgMmKkBb])$")
 	m := re.FindStringSubmatch(s)
 	if m == nil {
