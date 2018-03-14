@@ -85,7 +85,13 @@ func bytes(s string) (uint64, error) {
 }
 
 func ReadConfig(file string) (*Config, error) {
-	var c Config
+	c := Config{
+		Subscription: "unconfigured-firehose",
+		FlushInterval: "60s",
+		IdleTimeout:   "5m",
+		HighWatermark: "10M",
+	}
+
 	if file != "" {
 		b, err := ioutil.ReadFile(file)
 		if err != nil {
