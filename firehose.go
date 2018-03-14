@@ -38,6 +38,8 @@ func (e Event) Type() EventType {
 		return LogMessage
 	case events.Envelope_ValueMetric:
 		return ValueMetric
+	case events.Envelope_CounterEvent:
+		return CounterEvent
 	case events.Envelope_Error:
 		return ErrorEvent
 	case events.Envelope_ContainerMetric:
