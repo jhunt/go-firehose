@@ -88,6 +88,7 @@ func (f *Firehose) Start() error {
 		nil,
 	)
 	f.consumer.SetIdleTimeout(time.Duration(f.config.idleTimeoutSeconds) * time.Second)
+	f.consumer.RefreshTokenFrom(f)
 	f.messages, f.errs = f.consumer.Firehose(f.config.Subscription, authToken)
 
 	ticker := time.NewTicker(time.Duration(f.config.flushIntervalSeconds) * time.Second)
@@ -161,11 +162,18 @@ func (f *Firehose) AuthToken() string {
 	c, err := uaago.NewClient(f.config.UAA.URL)
 	if err != nil {
 		log.Fatalf("Failed to connect to UAA at %s: %s", f.config.UAA.URL, err)
+		return ""
 	}
 
 	token, err := c.GetAuthToken(f.config.UAA.Client, f.config.UAA.Secret, f.config.UAA.SkipVerify)
 	if err != nil {
 		log.Fatalf("Error fetching OAuth token for %s: %s.", f.config.UAA.Client, err)
+		return ""
 	}
 	return token
+}
+
+func (f *Firehose) RefreshAuthToken() (string, error) {
+	log.Printf("refreshing uaa auth token...")
+	return f.AuthToken(), nil
 }
